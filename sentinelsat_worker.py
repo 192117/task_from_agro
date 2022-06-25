@@ -1,7 +1,8 @@
+import geojson
 import pandas as pd
 from sentinelsat import SentinelAPI, geojson_to_wkt
-import os, datetime, json
-
+import os, datetime, json, geojson
+from zip_worker import worker_zip
 
 
 def worker_senti(data):
@@ -26,4 +27,5 @@ def worker_senti(data):
             os.mkdir(data['name'])
             api.download(df.iloc[i]['uuid'], directory_path=os.path.abspath(data['name']))
             break
-    return filename, data['name']
+
+    worker_zip(filename, data['name'])
