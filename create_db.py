@@ -1,21 +1,20 @@
-from sqlalchemy import Column, Integer, String, Text, create_engine
-from sqlalchemy.ext.declarative import declarative_base
-import os
+import psycopg2
 
+def start_db():
+    con = psycopg2.connect(
+        database="postgres",
+        user="postgres",
+        password="postgres",
+        host="127.0.0.1",
+        port="5432"
+    )
 
-db = create_engine(os.environ["URI_DB"])
-db.connect()
+    cur = con.cursor()
+    cur.execute('''CREATE TABLE FIELDS  
+         (ID SERIAL PRIMARY KEY,
+         NAME CHAR(100) UNIQUE NOT NULL,
+         IMAGE TEXT UNIQUE NOT NULL,
+         NDVI TEXT UNIQUE NOT NULL);''')
 
-Base = declarative_base()
-
-class Fields(Base):
-    __tablename__ = 'fields'
-    __tableargs__ = {
-        'comment': 'Поля.'
-    }
-    id = Column(Integer, nullable=False, primary_key=True, unique=True, autoincrement=True)
-    name = Column(String, unique=True, comment="Name field.")
-    data = Column(Text, comment="Information about field.")
-
-Base.metadata.create_all(db)
-# Base.metadata.drop_all(db) # Удалить таблицы в БД.
+    con.commit()
+    con.close()
