@@ -2,34 +2,46 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import FileResponse
 from sentinelsat_worker import worker_senti
 from make_image import images_make
-import os, shutil, psycopg2
-from create_db import start_db
+import os, shutil
+import psycopg2
+import create_db
+from dotenv import load_dotenv
+
+load_dotenv()
+
+name_db = os.getenv('name_db')
+user_db = os.getenv('user_db')
+password_db = os.getenv('password_db')
+host_db = os.getenv('host_db')
+port_db = os.getenv('port_db')
 
 app = FastAPI()
-# start_db()
 
 con = psycopg2.connect(
-        database="postgres",
-        user="postgres",
-        password="postgres",
-        host="127.0.0.1",
-        port="5432"
+        database=name_db,
+        user=user_db,
+        password=password_db,
+        host=host_db,
+        port=port_db
     )
+
 
 @app.post('/add')
 async def post_field(request: Request):
-    data = await request.json()
     try:
-        worker_senti(data)
+        data = await request.json()
         cur = con.cursor()
         cur.execute("SELECT * FROM fields WHERE name = %s", (data['name'],))
-        if len(cur.fetchall()) == 0:
+        if cur.fetchone() is None:
+            worker_senti(data)
             cur.execute("INSERT INTO fields (name, image, ndvi) VALUES (%s, %s, %s)", (data['name'], '', ''))
             con.commit()
         else:
-            raise HTTPException(status_code=208, detail="This field name already exists.")
+            raise HTTPException(status_code=208, detail="This parameter name already exists.")
     except AttributeError:
         raise HTTPException(status_code=400, detail="It's not GEOJSON")
+    except KeyError:
+        raise HTTPException(status_code=400, detail="I can't find the parameter name")
 
     return f'Success! For NDVI and SNAPSHOT, use the name = {data["name"]}.'
 
@@ -37,39 +49,41 @@ async def post_field(request: Request):
 @app.get('/delete/')
 async def delete_field(name: str):
     cur = con.cursor()
-    cur.execute("SELECT name, image, ndvi FROM fields WHERE name = %s", (name,))
+    cur.execute("SELECT * FROM fields WHERE name = %s", (name,))
     rows = cur.fetchall()
-    if len(cur.fetchall()) != 0:
-        cur.execute("DELETE * FROM fields WHERE name = %s", (name,))
+    if len(rows) != 0:
+        shutil.rmtree(os.path.abspath(rows[0][1]).replace(' ', ''))
+        os.remove(os.path.abspath(rows[0][2]).replace(' ', ''))
+        os.remove(os.path.abspath(rows[0][3]).replace(' ', ''))
+        cur.execute("DELETE FROM fields WHERE name = %s", (name,))
         con.commit()
-        shutil.rmtree(os.path.abspath(rows[0][0]))
-        shutil.rmtree(os.path.abspath(rows[0][1]))
-        shutil.rmtree(os.path.abspath(rows[0][2]))
+        return 'Success!'
     else:
-        raise HTTPException(status_code=204, detail="There is no such field.")
+        return 'This parameter name does not exist.'
 
 
 @app.get('/ndvi/')
 async def ndvi_field(name: str):
     if name:
+        image = images_make('ndvi', name)
         cur = con.cursor()
-        cur.execute("UPDATE fields set ndvi = %s where name = %s", (images_make('ndvi', name), name))
+        cur.execute("UPDATE fields set ndvi = %s WHERE name = %s", (image, name))
         con.commit()
-        cur.execute("SELECT ndvi FROM fields WHERE name = %s", (name,))
-        path = cur.fetchone()
-        return FileResponse(path[0])
+        cur.close()
+        return FileResponse(image)
     else:
         return 'It is necessary to send arguments'
+
 
 @app.get('/show/')
 async def show_field(name: str):
     if name:
+        image = images_make('show', name)
         cur = con.cursor()
-        cur.execute(f"UPDATE fields set image = %s WHERE name = %s", (images_make('show', name), name))
+        cur.execute(f"UPDATE fields set image = %s WHERE name = %s", (image, name))
         con.commit()
-        cur.execute(f"SELECT image FROM fields WHERE name = %s", (name,))
-        path = cur.fetchone()
-        return FileResponse(path[0])
+        cur.close()
+        return FileResponse(image)
     else:
         return 'It is necessary to send arguments'
 

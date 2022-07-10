@@ -1,4 +1,4 @@
-import os
+import os, numpy
 import rasterio as rio
 
 
@@ -21,17 +21,13 @@ def images_make(type, full_name):
 
         red = b4.read()
         nir = b8.read()
+        ndvi = (nir.astype(numpy.float32) - red.astype(numpy.float32)) / (nir + red)
+        profile = b4.meta
+        profile.update(driver='GTiff')
+        profile.update(dtype=rio.float32)
+        rio.open(f'{full_name}_ndvi.tiff', 'w', **profile).write(ndvi.astype(rio.float32))
 
-        ndvi = (nir.astype(float) - red.astype(float)) / (nir + red)
-
-        meta = b4.meta
-        meta.update(driver='GTiff')
-        meta.update(dtype=rio.float32)
-
-        with rio.open(f'{full_name}_ndvi.tif', 'w', **meta) as dst:
-            dst.write(ndvi.astype(rio.float32))
-
-        links = os.path.abspath(f'{full_name}_ndvi.tif')
+        filename = f'{full_name}_ndvi.tiff'
 
     elif type == 'show':
 
@@ -42,6 +38,8 @@ def images_make(type, full_name):
             rgb.write(b4.read(1), 3)
             rgb.close()
 
-        links = os.path.abspath(f'{full_name}.tiff')
+        filename = f'{full_name}.tiff'
+
+    links = os.path.abspath(filename)
 
     return links

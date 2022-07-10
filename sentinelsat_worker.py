@@ -3,10 +3,14 @@ import pandas as pd
 from sentinelsat import SentinelAPI, geojson_to_wkt
 import os, datetime, json, geojson
 from zip_worker import worker_zip
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def worker_senti(data):
-    api = SentinelAPI('lakaka', '123456lakaka!')
+    user_sentinel = os.getenv('user_sentinel')
+    password_sentinel = os.getenv('password_sentinel')
+    api = SentinelAPI(user_sentinel, password_sentinel)
     data = json.dumps(data)
     data = geojson.loads(data)
     data.is_valid
