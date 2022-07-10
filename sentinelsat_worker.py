@@ -5,9 +5,9 @@ import os, datetime, json, geojson
 from zip_worker import worker_zip
 from dotenv import load_dotenv
 
-load_dotenv()
 
 def worker_senti(data):
+    load_dotenv()
     user_sentinel = os.getenv('user_sentinel')
     password_sentinel = os.getenv('password_sentinel')
     api = SentinelAPI(user_sentinel, password_sentinel)

@@ -3,9 +3,9 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 
-load_dotenv()
 
 def start_db():
+    load_dotenv()
     name_db = os.getenv('name_db')
     user_db = os.getenv('user_db')
     password_db = os.getenv('password_db')
