@@ -65,12 +65,15 @@ async def delete_field(name: str):
 @app.get('/ndvi/')
 async def ndvi_field(name: str):
     if name:
-        image = images_make('ndvi', name)
-        cur = con.cursor()
-        cur.execute("UPDATE fields set ndvi = %s WHERE name = %s", (image, name))
-        con.commit()
-        cur.close()
-        return FileResponse(image)
+        try:
+            image = images_make('ndvi', name)
+            cur = con.cursor()
+            cur.execute("UPDATE fields set ndvi = %s WHERE name = %s", (image, name))
+            con.commit()
+            cur.close()
+            return FileResponse(image)
+        except IndexError:
+            return 'Incorrect name'
     else:
         return 'It is necessary to send arguments'
 
@@ -78,12 +81,15 @@ async def ndvi_field(name: str):
 @app.get('/show/')
 async def show_field(name: str):
     if name:
-        image = images_make('show', name)
-        cur = con.cursor()
-        cur.execute(f"UPDATE fields set image = %s WHERE name = %s", (image, name))
-        con.commit()
-        cur.close()
-        return FileResponse(image)
+        try:
+            image = images_make('show', name)
+            cur = con.cursor()
+            cur.execute(f"UPDATE fields set image = %s WHERE name = %s", (image, name))
+            con.commit()
+            cur.close()
+            return FileResponse(image)
+        except IndexError:
+            return 'Incorrect name'
     else:
         return 'It is necessary to send arguments'
 
