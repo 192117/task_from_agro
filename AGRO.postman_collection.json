@@ -1,0 +1,533 @@
+{
+	"info": {
+		"_postman_id": "488ac3c6-3544-4cf6-a500-9ef00cb1b339",
+		"name": "AGRO",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13493713"
+	},
+	"item": [
+		{
+			"name": "Test add",
+			"item": [
+				{
+					"name": "add example1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\": \"FeatureCollection\",\r\n  \"features\": [\r\n    {\r\n      \"type\": \"Feature\",\r\n      \"properties\": {},\r\n      \"geometry\": {\r\n        \"type\": \"Polygon\",\r\n        \"coordinates\": [\r\n          [\r\n            [\r\n              35.55450439453125,\r\n              56.11187300039777\r\n            ],\r\n            [\r\n              36.6778564453125,\r\n              56.11187300039777\r\n            ],\r\n            [\r\n              36.6778564453125,\r\n              56.71505842389251\r\n            ],\r\n            [\r\n              35.55450439453125,\r\n              56.71505842389251\r\n            ],\r\n            [\r\n              35.55450439453125,\r\n              56.11187300039777\r\n            ]\r\n          ]\r\n        ]\r\n      }\r\n    }\r\n  ],\r\n  \"name\": \"EX1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://95.217.64.252:80/add",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add json",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"firstName\": \"Иван\",\r\n   \"lastName\": \"Иванов\",\r\n   \"address\": {\r\n       \"streetAddress\": \"Московское ш., 101, кв.101\",\r\n       \"city\": \"Ленинград\",\r\n       \"postalCode\": 101101\r\n   },\r\n   \"phoneNumbers\": [\r\n       \"812 123-1234\",\r\n       \"916 123-4567\"\r\n   ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://95.217.64.252:80/add",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add again name ex1",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\": \"FeatureCollection\",\r\n  \"features\": [\r\n    {\r\n      \"type\": \"Feature\",\r\n      \"properties\": {},\r\n      \"geometry\": {\r\n        \"type\": \"Polygon\",\r\n        \"coordinates\": [\r\n          [\r\n            [\r\n              38.8531494140625,\r\n              59.38638116673929\r\n            ],\r\n            [\r\n              40.1934814453125,\r\n              59.38638116673929\r\n            ],\r\n            [\r\n              40.1934814453125,\r\n              59.95501026206206\r\n            ],\r\n            [\r\n              38.8531494140625,\r\n              59.95501026206206\r\n            ],\r\n            [\r\n              38.8531494140625,\r\n              59.38638116673929\r\n            ]\r\n          ]\r\n        ]\r\n      }\r\n    }\r\n  ],\r\n  \"name\": \"EX1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://95.217.64.252:80/add",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add example2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\": \"FeatureCollection\",\r\n  \"features\": [\r\n    {\r\n      \"type\": \"Feature\",\r\n      \"properties\": {},\r\n      \"geometry\": {\r\n        \"type\": \"Polygon\",\r\n        \"coordinates\": [\r\n          [\r\n            [\r\n              38.8531494140625,\r\n              59.38638116673929\r\n            ],\r\n            [\r\n              40.1934814453125,\r\n              59.38638116673929\r\n            ],\r\n            [\r\n              40.1934814453125,\r\n              59.95501026206206\r\n            ],\r\n            [\r\n              38.8531494140625,\r\n              59.95501026206206\r\n            ],\r\n            [\r\n              38.8531494140625,\r\n              59.38638116673929\r\n            ]\r\n          ]\r\n        ]\r\n      }\r\n    }\r\n  ],\r\n  \"name\": \"EX2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://95.217.64.252:80/add",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add without name",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"type\": \"FeatureCollection\",\r\n  \"features\": [\r\n    {\r\n      \"type\": \"Feature\",\r\n      \"properties\": {},\r\n      \"geometry\": {\r\n        \"type\": \"Polygon\",\r\n        \"coordinates\": [\r\n          [\r\n            [\r\n              38.8531494140625,\r\n              59.38638116673929\r\n            ],\r\n            [\r\n              40.1934814453125,\r\n              59.38638116673929\r\n            ],\r\n            [\r\n              40.1934814453125,\r\n              59.95501026206206\r\n            ],\r\n            [\r\n              38.8531494140625,\r\n              59.95501026206206\r\n            ],\r\n            [\r\n              38.8531494140625,\r\n              59.38638116673929\r\n            ]\r\n          ]\r\n        ]\r\n      }\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://95.217.64.252:80/add",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"add"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test show and ndvi",
+			"item": [
+				{
+					"name": "EX1 show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/show/?name=EX1",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"show",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "EX1"
+								}
+							]
+						},
+						"description": "Так как изображение отправляемое в ответ на запрос очень большое, то стоит выполнить данный запрос через браузер."
+					},
+					"response": []
+				},
+				{
+					"name": "EX2 show",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/show/?name=EX2",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"show",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "EX2"
+								}
+							]
+						},
+						"description": "Так как изображение отправляемое в ответ на запрос очень большое, то стоит выполнить данный запрос через браузер."
+					},
+					"response": []
+				},
+				{
+					"name": "show without name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/show/?name",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"show",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EX1 ndvi",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/ndvi/?name=EX1",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"ndvi",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "EX1"
+								}
+							]
+						},
+						"description": "Так как изображение отправляемое в ответ на запрос очень большое, то стоит выполнить данный запрос через браузер."
+					},
+					"response": []
+				},
+				{
+					"name": "EX2 ndvi",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/ndvi/?name=EX2",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"ndvi",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "EX2"
+								}
+							]
+						},
+						"description": "Так как изображение отправляемое в ответ на запрос очень большое, то стоит выполнить данный запрос через браузер."
+					},
+					"response": []
+				},
+				{
+					"name": "ndvi without name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/ndvi/?name",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"ndvi",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "show incorrect name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/show/?name=ANY",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"show",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "ANY"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ndvi incorrect name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/ndvi/?name=ANY",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"ndvi",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "ANY"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Test delete",
+			"item": [
+				{
+					"name": "incorrect name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/delete/?name=AMAMAM",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"delete",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "AMAMAM"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "without name",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/delete/",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"delete",
+								""
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "del example1",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/delete/?name=EX1",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"delete",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "EX1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "del example2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://95.217.64.252:80/delete/?name=EX2",
+							"protocol": "http",
+							"host": [
+								"95",
+								"217",
+								"64",
+								"252"
+							],
+							"port": "80",
+							"path": [
+								"delete",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "EX2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
