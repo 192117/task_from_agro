@@ -85,3 +85,43 @@ Success! For NDVI and SNAPSHOT, use the name = EXAMPLE.
 ```
 Success!
 ```
+
+### Настройки NGINX
+
+```
+[Unit]
+Description=Gunicorn Daemon for FastAPI AGRO Application
+After=network.target
+
+[Service]
+User=kokoc
+Group=www-data
+WorkingDirectory=/home/kokoc/task_from_agro
+ExecStart=/home/kokoc/task_from_agro/venv/bin/gunicorn app:app -k uvicorn.workers.UvicornWorker \
+	  --timeout 800 \
+	  --log-level 'debug' \
+	  --access-logfile /home/kokoc/task_from_agro/access_log \
+	  --error-logfile /home/kokoc/task_from_agro/error_log
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+```
+server {
+    listen __;
+    server_name ip {server_name};
+
+    location / {
+        proxy_pass ____;
+	proxy_read_timeout 600;
+	proxy_send_timeout 600;
+	proxy_connect_timeout 600;
+    }
+    proxy_buffers 8 8k;
+    proxy_buffer_size 8k;
+    proxy_read_timeout 120s;
+}
+
+```

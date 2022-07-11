@@ -33,9 +33,11 @@ async def post_field(request: Request):
         cur = con.cursor()
         cur.execute("SELECT * FROM fields WHERE name = %s", (data['name'],))
         if cur.fetchone() is None:
-            worker_senti(data)
-            cur.execute("INSERT INTO fields (name, image, ndvi) VALUES (%s, %s, %s)", (data['name'], '', ''))
-            con.commit()
+            if worker_senti(data) == 1:
+                cur.execute("INSERT INTO fields (name) VALUES (%s)", (data['name'],))
+                con.commit()
+            else:
+                raise HTTPException(status_code=200, detail="The satellite has no images.")
         else:
             raise HTTPException(status_code=208, detail="This parameter name already exists.")
     except AttributeError:
@@ -92,4 +94,3 @@ async def show_field(name: str):
             return 'Incorrect name'
     else:
         return 'It is necessary to send arguments'
-

@@ -25,11 +25,15 @@ def worker_senti(data):
                          order_by='cloudcoverpercentage',
                          cloudcoverpercentage=(0, 10))
     df = pd.DataFrame(api.to_dataframe(products))
-    for i in range(df.shape[0]):
-        if api.is_online(df.iloc[i]['uuid']):
-            filename = df.iloc[i]['title']
-            os.mkdir(data['name'])
-            api.download(df.iloc[i]['uuid'], directory_path=os.path.abspath(data['name']))
-            break
+    if df.shape == (0, 0):
+        return 0
+    else:
+        for i in range(df.shape[0]):
+            if api.is_online(df.iloc[i]['uuid']):
+                filename = df.iloc[i]['title']
+                os.mkdir(data['name'])
+                api.download(df.iloc[i]['uuid'], directory_path=os.path.abspath(data['name']))
+                break
 
-    worker_zip(filename, data['name'])
+        worker_zip(filename, data['name'])
+        return 1
