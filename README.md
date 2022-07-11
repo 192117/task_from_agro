@@ -86,6 +86,8 @@ Success! For NDVI and SNAPSHOT, use the name = EXAMPLE.
 Success!
 ```
 
+### Коллекция [POSTMAN](https://github.com/192117/task_from_agro/blob/master/AGRO.postman_collection.json)
+
 ### Настройки NGINX
 
 ```
