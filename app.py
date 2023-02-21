@@ -1,96 +1,105 @@
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import FileResponse
-from sentinelsat_worker import worker_senti
-from make_image import images_make
-import os, shutil
-import psycopg2
-import create_db
-from dotenv import load_dotenv
+import json
 
-load_dotenv()
+from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.responses import FileResponse, JSONResponse
+from sqlalchemy.orm import Session
 
-name_db = os.getenv('name_db')
-user_db = os.getenv('user_db')
-password_db = os.getenv('password_db')
-host_db = os.getenv('host_db')
-port_db = os.getenv('port_db')
+from create_db import connect_db, start_db
+from make_image import make_image_for_user
+from models import GeoJSONFeatureCollection
+from sentinelsat_worker import extract_shots_from_setninelsat
+from utils import delete_files
 
 app = FastAPI()
 
-con = psycopg2.connect(
-        database=name_db,
-        user=user_db,
-        password=password_db,
-        host=host_db,
-        port=port_db
-    )
+
+@app.on_event('startup')
+async def startup_event():
+    start_db()
 
 
-@app.post('/add')
-async def post_field(request: Request):
+@app.on_event('shutdown')
+async def shutdown_event():
+    connect_db().close()
+
+
+@app.post('/add/', response_class=JSONResponse)
+async def add_object(request: Request, db: Session = Depends(connect_db)):
     try:
+        from create_db import Image
         data = await request.json()
-        cur = con.cursor()
-        cur.execute("SELECT * FROM fields WHERE name = %s", (data['name'],))
-        if cur.fetchone() is None:
-            if worker_senti(data) == 1:
-                cur.execute("INSERT INTO fields (name) VALUES (%s)", (data['name'],))
-                con.commit()
+        geojson_data = GeoJSONFeatureCollection(**data)
+        result = db.query(Image.name_image).filter(
+            Image.name_image == geojson_data.features[0].properties['name']
+        ).first()
+        if result is None:
+            if extract_shots_from_setninelsat(data) == 1:
+                new_image = Image(name_image=geojson_data.features[0].properties['name'])
+                db.add(new_image)
+                db.commit()
+                db.refresh(new_image)
+                return JSONResponse(
+                    {'detail': f'Success! For NDVI and SNAPSHOT, use the name = {new_image.name_image}.'},
+                    status_code=200
+                )
             else:
-                raise HTTPException(status_code=200, detail="The satellite has no images.")
+                raise HTTPException(status_code=404, detail="The satellite has no images.")
         else:
             raise HTTPException(status_code=208, detail="This parameter name already exists.")
-    except AttributeError:
-        raise HTTPException(status_code=400, detail="It's not GEOJSON")
-    except KeyError:
-        raise HTTPException(status_code=400, detail="I can't find the parameter name")
-
-    return f'Success! For NDVI and SNAPSHOT, use the name = {data["name"]}.'
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=415, detail="It's not JSON")
 
 
-@app.get('/delete/')
-async def delete_field(name: str):
-    cur = con.cursor()
-    cur.execute("SELECT * FROM fields WHERE name = %s", (name,))
-    rows = cur.fetchall()
-    if len(rows) != 0:
-        shutil.rmtree(os.path.abspath(rows[0][1]).replace(' ', ''))
-        os.remove(os.path.abspath(rows[0][2]).replace(' ', ''))
-        os.remove(os.path.abspath(rows[0][3]).replace(' ', ''))
-        cur.execute("DELETE FROM fields WHERE name = %s", (name,))
-        con.commit()
-        return 'Success!'
+@app.get('/delete/', response_class=JSONResponse)
+async def delete_object(name: str, db: Session = Depends(connect_db)):
+    from create_db import Image
+    result = db.query(Image).filter(Image.name_image == name).first()
+    if result:
+        if delete_files(result):
+            db.query(Image).filter(Image.name_image == name).delete()
+            db.commit()
+            return JSONResponse({'detail': 'Success!'}, status_code=200)
+        else:
+            return JSONResponse({'detail': 'Something wrong on server!'}, status_code=500)
     else:
-        return 'This parameter name does not exist.'
+        return JSONResponse({'detail': 'This parameter name does not exist.'}, status_code=404)
 
 
-@app.get('/ndvi/')
-async def ndvi_field(name: str):
+@app.get('/ndvi/', response_class=FileResponse)
+async def get_ndvi_image(name: str, db: Session = Depends(connect_db)):
     if name:
         try:
-            image = images_make('ndvi', name)
-            cur = con.cursor()
-            cur.execute("UPDATE fields set ndvi = %s WHERE name = %s", (image, name))
-            con.commit()
-            cur.close()
-            return FileResponse(image)
+            from create_db import Image
+            result = db.query(Image.path_to_ndvi).filter(Image.name_image == name).first()
+            if result[0]:
+                path_to_ndvi = result[0]
+            else:
+                path_to_ndvi = make_image_for_user('ndvi', name)
+                db.query(Image).filter(Image.name_image == name).update({'path_to_ndvi': path_to_ndvi})
+                db.commit()
+            return FileResponse(path=path_to_ndvi, filename=path_to_ndvi.split('/')[-1])
         except IndexError:
-            return 'Incorrect name'
+            return JSONResponse({'detail': 'Incorrect name'}, status_code=404)
     else:
-        return 'It is necessary to send arguments'
+        return JSONResponse({'detail': 'It is necessary to send arguments'}, status_code=400)
 
 
-@app.get('/show/')
-async def show_field(name: str):
+@app.get('/show/', response_class=FileResponse)
+async def get_image(name: str, db: Session = Depends(connect_db)):
     if name:
         try:
-            image = images_make('show', name)
-            cur = con.cursor()
-            cur.execute(f"UPDATE fields set image = %s WHERE name = %s", (image, name))
-            con.commit()
-            cur.close()
-            return FileResponse(image)
+            from create_db import Image
+            result = db.query(Image.path_to_image).filter(Image.name_image == name).first()
+            if result[0]:
+                path_to_image = result[0]
+            else:
+                path_to_image = make_image_for_user('show', name)
+                db.query(Image).filter(Image.name_image == name).update({'path_to_image': path_to_image})
+                db.commit()
+            return FileResponse(path=path_to_image, filename=path_to_image.split('/')[-1])
         except IndexError:
-            return 'Incorrect name'
+            return JSONResponse({'detail': 'Incorrect name'}, status_code=404)
     else:
-        return 'It is necessary to send arguments'
+        return JSONResponse({'detail': 'It is necessary to send arguments'}, status_code=400)

@@ -1,18 +1,21 @@
 # Веб-сервис, выгружающий космические снимки и определяющий NDVI на поле, предоставляя REST API.
 
-## Сервис располагается на собственном VDS-сервере, реализован на FastAPI с использованием PostgreSQL, uvicorn, gunicorn, nginx.
+## Стек:
+1. Python 3.8
+2. FastAPI
+3. Docker
+4. PostgreSQL
+5. SQLAlchemy
+6. Sentinelsat
+7. Rasterio
 
-*P.S. Иногда возможны перебои в работе сервера, из-за загрузки других проектов и предоставления им онлайн-жизни.*
-
-*UPDATE: Сервер временно выключен и недоступен*
-
-### Функционал:
+## Функционал:
 
 1. Можно добавить и удалить сельхоз поле в формате GeoJSON.
 2. Получить снимок поля по API поставщиков космических снимвков (sentinelsat)
 3. Получить изображение поля с NDVI.
 
-### Описание работы веб-сервиса:
+## Описание работы веб-сервиса:
 
 * /add
 
@@ -22,41 +25,42 @@
 
 ```
 {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              55.88951110839843,
-              53.349321688468414
-            ],
-            [
-              56.064605712890625,
-              53.349321688468414
-            ],
-            [
-              56.064605712890625,
-              53.452487004641746
-            ],
-            [
-              55.88951110839843,
-              53.452487004641746
-            ],
-            [
-              55.88951110839843,
-              53.349321688468414
-            ]
-          ]
-        ]
-      }
-    }
-  ],
-  "name": "EXAMPLE"
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {
+                "name": "Ottawa"
+            },
+            "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                    [
+                        [
+                            -75.68351745605469,
+                            45.41279785553127
+                        ],
+                        [
+                            -75.68351745605469,
+                            45.43495571986105
+                        ],
+                        [
+                            -75.6424331665039,
+                            45.43495571986105
+                        ],
+                        [
+                            -75.6424331665039,
+                            45.41279785553127
+                        ],
+                        [
+                            -75.68351745605469,
+                            45.41279785553127
+                        ]
+                    ]
+                ]
+            }
+        }
+    ]
 }
 ```
 
@@ -90,42 +94,6 @@ Success!
 
 ### Коллекция [POSTMAN](https://github.com/192117/task_from_agro/blob/master/AGRO.postman_collection.json)
 
-### Настройки NGINX
+## Доступ к серверу:
 
-```
-[Unit]
-Description=Gunicorn Daemon for FastAPI AGRO Application
-After=network.target
-
-[Service]
-User=kokoc
-Group=www-data
-WorkingDirectory=/home/kokoc/task_from_agro
-ExecStart=/home/kokoc/task_from_agro/venv/bin/gunicorn app:app -k uvicorn.workers.UvicornWorker \
-	  --timeout 800 \
-	  --log-level 'debug' \
-	  --access-logfile /home/kokoc/task_from_agro/access_log \
-	  --error-logfile /home/kokoc/task_from_agro/error_log
-
-[Install]
-WantedBy=multi-user.target
-
-```
-
-```
-server {
-    listen __;
-    server_name ip {server_name};
-
-    location / {
-        proxy_pass ____;
-	proxy_read_timeout 600;
-	proxy_send_timeout 600;
-	proxy_connect_timeout 600;
-    }
-    proxy_buffers 8 8k;
-    proxy_buffer_size 8k;
-    proxy_read_timeout 120s;
-}
-
-```
+- [Документация FastAPI](http://5.104.108.168:8002/docs/)

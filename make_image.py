@@ -1,8 +1,10 @@
-import os, numpy
+import os
+
+import numpy
 import rasterio as rio
 
 
-def images_make(type, full_name):
+def make_image_for_user(type, full_name):
     path = os.path.abspath(full_name)
     tree = list(os.walk(path))
     for i in tree[0][-1]:
@@ -19,6 +21,7 @@ def images_make(type, full_name):
 
     if type == 'ndvi':
 
+        numpy.seterr(invalid='ignore')
         red = b4.read()
         nir = b8.read()
         ndvi = (nir.astype(numpy.float32) - red.astype(numpy.float32)) / (nir + red)

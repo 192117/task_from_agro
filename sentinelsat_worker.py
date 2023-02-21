@@ -1,25 +1,26 @@
+import datetime
+import json
+import os
+
 import geojson
 import pandas as pd
 from sentinelsat import SentinelAPI, geojson_to_wkt
-import os, datetime, json, geojson
-from zip_worker import worker_zip
-from dotenv import load_dotenv
+
+from config import settings
+from zip_worker import extract_image_from_zip
 
 
-def worker_senti(data):
-    load_dotenv()
-    user_sentinel = os.getenv('user_sentinel')
-    password_sentinel = os.getenv('password_sentinel')
-    api = SentinelAPI(user_sentinel, password_sentinel)
-    data = json.dumps(data)
-    data = geojson.loads(data)
-    data.is_valid
-    n = datetime.datetime.today()
-    s = datetime.datetime(n.year, month=1, day=1, hour=12, minute=00, second=00)
+def extract_shots_from_setninelsat(data):
+    USER_SENTINEL = settings.USER_SENTINEL
+    PASSWORD_SENTINEL = settings.PASSWORD_SENTINEL
+    api = SentinelAPI(USER_SENTINEL, PASSWORD_SENTINEL)
+    data = geojson.loads(json.dumps(data))
+    now_datetime = datetime.datetime.today()
+    from_datetime = datetime.datetime(now_datetime.year, month=1, day=1, hour=12, minute=00, second=00)
     footprint = geojson_to_wkt(data)
     products = api.query(footprint,
                          platformname='Sentinel-2',
-                         date=(s, n),
+                         date=(from_datetime, now_datetime),
                          processinglevel='Level-2A',
                          area_relation='Contains',
                          order_by='cloudcoverpercentage',
@@ -31,9 +32,12 @@ def worker_senti(data):
         for i in range(df.shape[0]):
             if api.is_online(df.iloc[i]['uuid']):
                 filename = df.iloc[i]['title']
-                os.mkdir(data['name'])
-                api.download(df.iloc[i]['uuid'], directory_path=os.path.abspath(data['name']))
+                os.mkdir(data.features[0].properties['name'])
+                api.download(
+                    df.iloc[i]['uuid'],
+                    directory_path=os.path.abspath(data.features[0].properties['name'])
+                )
                 break
 
-        worker_zip(filename, data['name'])
+        extract_image_from_zip(filename, data['features'][0]['properties']['name'])
         return 1
